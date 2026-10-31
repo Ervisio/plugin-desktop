@@ -159,6 +159,7 @@ export function RemoteDesktop() {
   const [desktop,setDesktop]=useState('xfce');
   const [geometry,setGeometry]=useState('1280x720');
   const [viewing,setViewing]=useState(false);
+  const [confirmStop,setConfirmStop]=useState(false);
   const fetchState = async () => {
     try {const next = await gateway<RemoteState>('GET','/v1/status');setState(next);setError('');}
     catch(e) {setState(null);setError(e instanceof Error?e.message:String(e));}
