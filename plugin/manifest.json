@@ -1,0 +1,236 @@
+{
+  "id": "desktop",
+  "name": "Desktop",
+  "version": "0.1.0",
+  "description": "Install and manage Linux desktop environments, monitor sessions, and control a persistent graphical X11 desktop directly in Ervisio.",
+  "author": "Ervisio team",
+  "color": "term",
+  "icon": "monitor",
+  "entry": "index.js",
+  "minCore": "0.6.2",
+  "capabilities": {
+    "commands": [
+      {
+        "name": "desktop-status",
+        "description": "Read Linux desktop environments, display managers, active sessions and resource usage",
+        "argv": [
+          "python3",
+          "-B",
+          "/var/lib/ervisio/plugins/desktop/desktop_bridge.py",
+          "status"
+        ],
+        "timeoutSec": 60,
+        "platforms": [
+          "linux"
+        ]
+      },
+      {
+        "name": "desktop-plan",
+        "description": "Show a non-destructive package operation preview",
+        "argv": [
+          "python3",
+          "-B",
+          "/var/lib/ervisio/plugins/desktop/desktop_bridge.py",
+          "plan",
+          "{0}",
+          "{1}",
+          "{2}",
+          "{3}",
+          "{4}"
+        ],
+        "args": [
+          {
+            "pattern": "install|remove",
+            "maxLen": 8
+          },
+          {
+            "pattern": "gnome|plasma|cinnamon|xfce|mate|lxqt",
+            "maxLen": 16
+          },
+          {
+            "pattern": "minimal|standard|full|custom",
+            "maxLen": 10
+          },
+          {
+            "pattern": "[a-z,]{0,48}",
+            "maxLen": 48
+          },
+          {
+            "pattern": "managed|system",
+            "maxLen": 8
+          }
+        ],
+        "timeoutSec": 120,
+        "platforms": [
+          "linux"
+        ]
+      },
+      {
+        "name": "desktop-apply",
+        "description": "Start an approved Linux desktop package transaction in the background",
+        "admin": true,
+        "argv": [
+          "python3",
+          "-B",
+          "/var/lib/ervisio/plugins/desktop/desktop_bridge.py",
+          "apply",
+          "{0}",
+          "{1}",
+          "{2}",
+          "{3}",
+          "{4}",
+          "{5}"
+        ],
+        "args": [
+          {
+            "pattern": "install|remove",
+            "maxLen": 8
+          },
+          {
+            "pattern": "gnome|plasma|cinnamon|xfce|mate|lxqt",
+            "maxLen": 16
+          },
+          {
+            "pattern": "minimal|standard|full|custom",
+            "maxLen": 10
+          },
+          {
+            "pattern": "[a-z,]{0,48}",
+            "maxLen": 48
+          },
+          {
+            "pattern": "managed|system",
+            "maxLen": 8
+          },
+          {
+            "pattern": "[a-f0-9]{64}",
+            "maxLen": 64
+          }
+        ],
+        "timeoutSec": 120,
+        "platforms": [
+          "linux"
+        ]
+      },
+      {
+        "name": "desktop-control",
+        "description": "Manage graphical boot, display managers and individual user sessions",
+        "admin": true,
+        "argv": [
+          "python3",
+          "-B",
+          "/var/lib/ervisio/plugins/desktop/desktop_bridge.py",
+          "control",
+          "{0}",
+          "{1}"
+        ],
+        "args": [
+          {
+            "pattern": "graphical|text|dm-enable|dm-disable|dm-start|dm-stop|session-end",
+            "maxLen": 20
+          },
+          {
+            "pattern": "-|gdm|sddm|lightdm|lxdm|[A-Za-z0-9_.-]{1,32}",
+            "maxLen": 32
+          }
+        ],
+        "timeoutSec": 120,
+        "platforms": [
+          "linux"
+        ]
+      },
+      {
+        "name": "desktop-gateway-install",
+        "description": "Install TigerVNC and a local per-user browser desktop gateway (root)",
+        "admin": true,
+        "platforms": [
+          "linux"
+        ],
+        "argv": [
+          "python3",
+          "-B",
+          "/var/lib/ervisio/plugins/desktop/desktop_gateway.py",
+          "install"
+        ],
+        "timeoutSec": 600
+      }
+    ],
+    "http": [
+      {
+        "name": "desktop-gateway",
+        "socket": "/run/ervisio-desktop/gateway.sock",
+        "platforms": [
+          "linux"
+        ],
+        "maxBody": 524288,
+        "timeoutSec": 30,
+        "rules": [
+          {
+            "methods": [
+              "GET"
+            ],
+            "path": "/v1/status"
+          },
+          {
+            "methods": [
+              "GET"
+            ],
+            "path": "/v1/stream"
+          },
+          {
+            "methods": [
+              "POST"
+            ],
+            "path": "/v1/session"
+          },
+          {
+            "methods": [
+              "DELETE"
+            ],
+            "path": "/v1/session"
+          },
+          {
+            "methods": [
+              "POST"
+            ],
+            "path": "/v1/input"
+          }
+        ],
+        "headers": [
+          "X-Desktop-Token"
+        ]
+      }
+    ]
+  },
+  "contributes": {
+    "pages": [
+      {
+        "id": "desktop",
+        "title": "Desktop",
+        "icon": "monitor"
+      }
+    ],
+    "widgets": [
+      {
+        "id": "desktop-status",
+        "title": "Desktop",
+        "icon": "monitor"
+      }
+    ],
+    "snippets": [
+      {
+        "name": "Desktop sessions",
+        "command": "loginctl list-sessions"
+      },
+      {
+        "name": "Display manager",
+        "command": "systemctl status display-manager.service"
+      }
+    ]
+  },
+  "visibleTo": {},
+  "platforms": [
+    "linux",
+    "windows"
+  ]
+}
